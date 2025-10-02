@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -58,7 +58,7 @@
             users: [
                 { id: 'user1', username: 'SANDHEESH', role: 'Learner', email: 'alex@study.com', password: '123', points: 1250, bio: "Enthusiastic front-end enthusiast.", badges: [1, 3] },
                 { id: 'user2', username: 'Vishnu', role: 'Mentor', email: 'mia@study.com', password: '123', points: 5800, bio: "Senior UX Designer and community mentor.", badges: [1, 2, 3, 4] },
-                { id: 'user3', username: 'Sandy', role: 'Mentor', email: 'dev@study.com', password: '123', points: 3100, bio: "Backend engineer focused on scalability.", badges: [1, 3] },
+                { id: 'user3', username: 'DevGuru', role: 'Mentor', email: 'dev@study.com', password: '123', points: 3100, bio: "Backend engineer focused on scalability.", badges: [1, 3] },
             ],
             articles: [
                 { id: 1, title: "Mastering Tailwind CSS in 5 Steps", authorId: 'user2', authorName: 'MiaMentor', content: "Tailwind CSS allows for rapid UI development and is great for responsive design.", likes: 45, comments: 12, tags: ['css', 'ui', 'tailwind'] },
@@ -211,7 +211,9 @@
                                 ${isLogin ? "Need an account? Register" : "Already have an account? Log In"}
                             </button>
                         </div>
-                        
+                        <p class="text-center text-sm text-gray-500 mt-4">
+                            Use 'alex@study.com' or 'mia@study.com' with password '123' to login.
+                        </p>
                     `, 'max-w-md w-full')}
                 </div>
             `;
