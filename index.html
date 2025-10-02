@@ -3,767 +3,536 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduVerse: Interactive Learning Platform</title>
-    <!-- Load Tailwind CSS from CDN for instant, single-file styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Lucide icons for a clean look -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>Momentum Flow | Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
     <style>
-        /* Custom styles for better scrollbar and full height on main content */
-        html { scroll-behavior: smooth; }
-        body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
-        /* Style for the sidebar to ensure it covers full height on desktop */
-        #sidebar {
-            transition: transform 0.3s ease-in-out;
+        /* --- CSS STYLES --- */
+        
+        /* Global Styles & Variables (Dark Mode) */
+        :root {
+            --primary-color: #00e0a5; /* Mint/Teal Accent */
+            --secondary-color: #9a4cff; /* Purple Accent */
+            --bg-dark: #0a0a0a;
+            --card-dark: #1e1e1e;
+            --text-light: #e0e0e0;
+            --border-color: #333;
         }
-        /* Hide scrollbar for aesthetics */
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
-        .hide-scrollbar {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+
+        body.dark-mode {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
         }
-        /* Custom card style */
+
+        #app {
+            max-width: 600px;
+            margin: 0 auto;
+            min-height: 100vh;
+            padding-bottom: 70px; /* Space for fixed bottom nav */
+        }
+
+        /* Header & Navigation */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--bg-dark);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .profile-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 2px solid var(--secondary-color);
+            object-fit: cover;
+        }
+
+        .streak-badge {
+            background-color: var(--card-dark);
+            color: var(--primary-color);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        .streak-badge i { margin-right: 5px; }
+
+
+        /* Main Dashboard & Cards */
+        .dashboard {
+            padding: 20px 15px;
+        }
+
         .card {
-            background-color: white;
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
+            background-color: var(--card-dark);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
-        .card:hover {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+
+        .dashboard h2 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            border-left: 3px solid var(--primary-color);
+            padding-left: 10px;
         }
+
+        /* Progress Ring (Analytics) */
+        .progress-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-track {
+            stroke: var(--border-color);
+            fill: transparent;
+            stroke-width: 10;
+        }
+
+        .progress-ring-indicator {
+            stroke: var(--primary-color);
+            fill: transparent;
+            stroke-width: 10;
+            transition: stroke-dashoffset 0.5s ease-in-out;
+            stroke-linecap: round;
+        }
+
+        .rate-text {
+            position: absolute;
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .insight {
+            text-align: center;
+            font-style: italic;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        /* Gamification */
+        .skill-level {
+            padding: 10px 0;
+        }
+        .level-text { font-size: 0.9em; color: var(--secondary-color); margin-top: 5px; }
+
+        .xp-bar-wrapper {
+            height: 8px;
+            background-color: var(--border-color);
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .xp-bar {
+            height: 100%;
+            background-color: var(--secondary-color);
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* Task List */
+        #task-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #282828;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-content {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            transition: opacity 0.3s;
+        }
+
+        .task-content.completed {
+            opacity: 0.5;
+            text-decoration: line-through;
+        }
+
+        .task-item input[type="checkbox"] {
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--primary-color);
+            border-radius: 6px;
+            margin-right: 12px;
+            cursor: pointer;
+            position: relative;
+            background-color: transparent;
+            flex-shrink: 0;
+        }
+
+        .task-item input[type="checkbox"]:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .task-item input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--card-dark);
+            font-size: 14px;
+            font-weight: 900;
+        }
+
+        .tag {
+            font-size: 0.7em;
+            padding: 4px 10px;
+            border-radius: 12px;
+            margin-left: auto;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .tag-habit { background-color: #388e3c; color: #fff; } /* Green */
+        .tag-project { background-color: #1976d2; color: #fff; } /* Blue */
+
+        .add-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .add-btn:hover { background-color: #7b29e0; }
+        .add-btn i { margin-right: 8px; }
+
+        /* Social Feed */
+        .feed-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #282828;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+        }
+        .feed-item:last-child { border-bottom: none; }
+
+        .feed-user { font-weight: bold; color: var(--primary-color); }
+
+        .kudos-btn {
+            background: none;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 0.75em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .kudos-btn:hover {
+            background-color: var(--primary-color);
+            color: var(--card-dark);
+        }
+
+
+        /* Mobile Bottom Nav (Fixed) */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background-color: var(--card-dark);
+            border-top: 1px solid var(--border-color);
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #999;
+            text-decoration: none;
+            font-size: 0.75em;
+            transition: color 0.3s;
+        }
+
+        .nav-item i {
+            font-size: 1.6em;
+            margin-bottom: 4px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        /* --- CSS for HIDING non-Flow content --- */
+        /* Since the entire dashboard main section is the "Flow" view, we only need to hide the other logical groups within the JS if we were building a true SPA. */
+        /* For this simple file structure, all flow content is visible by default. */
     </style>
 </head>
-<body class="antialiased">
-    <div id="app" class="min-h-screen flex flex-col">
-        <!-- Application will be rendered here -->
+<body class="dark-mode">
+    <div id="app">
+        
+        <header class="app-header">
+            <h1 class="logo">Momentum</h1>
+            <div class="header-controls">
+                <span id="streak-counter" class="streak-badge"><i class="fas fa-fire"></i> 7 Days</span>
+                <img src="https://i.imgur.com/gK9qQ4O.png" alt="Profile" class="profile-avatar">
+            </div>
+        </header>
+
+        <main id="flow-view" class="dashboard">
+
+            <section class="flow-pulse-card card">
+                <h2>Your Flow Pulse 📊</h2>
+                <div class="progress-container">
+                    <svg class="progress-ring" width="120" height="120">
+                        <circle class="progress-ring-track" r="50" cx="60" cy="60"></circle>
+                        <circle id="progress-indicator" class="progress-ring-indicator" r="50" cx="60" cy="60" 
+                                style="stroke-dasharray: 314.15; stroke-dashoffset: 78.5;"></circle>
+                    </svg>
+                    <span id="completion-rate" class="rate-text">75%</span>
+                </div>
+                <p class="insight">Insight: You're crushing your daily habits!</p>
+            </section>
+
+            <section class="skill-tree-card card">
+                <h2>Skill Tree Progress 🌳</h2>
+                <div class="skill-level">
+                    <p>Skill: **Frontend Development**</p>
+                    <p class="level-text">Level 2 (60 XP to Level 3)</p>
+                    <div class="xp-bar-wrapper">
+                        <div id="xp-bar-progress" class="xp-bar" style="width: 60%;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="task-section card">
+                <h2>Today's Missions 📝</h2>
+                <ul id="task-list">
+                    </ul>
+                <button id="add-task-btn" class="add-btn"><i class="fas fa-plus"></i> Add New Flow Item</button>
+            </section>
+            
+            <section class="social-snippet-card card">
+                <h2>Squad Activity Feed 👥</h2>
+                <div id="social-feed">
+                    <div class="feed-item">
+                        <span class="feed-user">Alex M.</span> earned the **Master Achiever** badge! 🎉
+                        <button class="kudos-btn">Send Kudos</button>
+                    </div>
+                    <div class="feed-item">
+                        <span class="feed-user">Sarah J.</span> completed her weekly **Journaling Habit**. ✍️
+                        <button class="kudos-btn">Send Kudos</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active"><i class="fas fa-chart-line"></i> Flow</a>
+            <a href="#" class="nav-item"><i class="fas fa-users"></i> Squads</a>
+            <a href="#" class="nav-item"><i class="fas fa-trophy"></i> Challenges</a>
+            <a href="#" class="nav-item"><i class="fas fa-user"></i> Profile</a>
+        </nav>
     </div>
 
     <script>
-        // --- MOCK DATA & APP STATE ---
-        const mockBadges = [
-            { id: 1, name: 'First Article', icon: '✍️', description: 'Published one article.', points: 100 },
-            { id: 2, name: 'Discussion Starter', icon: '💬', description: 'Started a study group.', points: 150 },
-            { id: 3, name: 'React Pro', icon: '⚛️', description: 'Mastered the React module.', points: 500 },
-            { id: 4, name: 'Mentor Master', icon: '🌟', description: 'Reached 5000+ points.', points: 1000 },
-        ];
+        /* --- JAVASCRIPT LOGIC (Simplified for Flow View) --- */
 
-        let appState = {
-            view: 'dashboard', // 'dashboard', 'knowledge', 'groups', 'profile'
-            currentUser: null,
-            isSidebarOpen: false,
-            users: [
-                { id: 'user1', username: 'SANDHEESH', role: 'Learner', email: 'alex@study.com', password: '123', points: 1250, bio: "Enthusiastic front-end enthusiast.", badges: [1, 3] },
-                { id: 'user2', username: 'Vishnu', role: 'Mentor', email: 'mia@study.com', password: '123', points: 5800, bio: "Senior UX Designer and community mentor.", badges: [1, 2, 3, 4] },
-                { id: 'user3', username: 'DevGuru', role: 'Mentor', email: 'dev@study.com', password: '123', points: 3100, bio: "Backend engineer focused on scalability.", badges: [1, 3] },
-            ],
-            articles: [
-                { id: 1, title: "Mastering Tailwind CSS in 5 Steps", authorId: 'user2', authorName: 'MiaMentor', content: "Tailwind CSS allows for rapid UI development and is great for responsive design.", likes: 45, comments: 12, tags: ['css', 'ui', 'tailwind'] },
-                { id: 2, title: "The Power of React useEffect Hook", authorId: 'user1', authorName: 'AlexLearner', content: "Understanding component lifecycle with useEffect is essential for state synchronization.", likes: 88, comments: 25, tags: ['react', 'hooks'] },
-                { id: 3, title: "Introduction to JavaScript Promises", authorId: 'user3', authorName: 'DevGuru', content: "Promises simplify asynchronous operations, making code cleaner and more readable.", likes: 30, comments: 5, tags: ['javascript', 'async'] },
-            ],
-            groups: [
-                { id: 101, name: 'Advanced React State Management', members: ['user1', 'user2', 'user3'], topic: 'Discussing Zustand and Redux.', lastMessage: 'Mia: Check out the new docs!', isLive: true },
-                { id: 102, name: 'Design Thinking Principles', members: ['user2', 'user3'], topic: 'Focus on user research and prototyping.', lastMessage: 'Dev: Need feedback on my prototype.', isLive: false },
-            ],
-            chatMessages: [
-                { id: 1, groupId: 101, userId: 'user2', user: 'MiaMentor', text: 'Welcome to the group! Let\'s start with this week\'s topic.', time: '10:00 AM' },
-                { id: 2, groupId: 101, userId: 'user1', user: 'AlexLearner', text: 'Sounds good! Where can I find the initial resources?', time: '10:05 AM' },
-                { id: 3, groupId: 101, userId: 'user3', user: 'DevGuru', text: 'I shared a link in the pinned documents section.', time: '10:15 AM' },
-            ]
-        };
-        
-        let activeGroupId = appState.groups.length > 0 ? appState.groups[0].id : null;
-        let searchTerm = '';
-
-
-        // --- UTILITY FUNCTIONS (Simplified to return HTML strings) ---
-
-        const getIcon = (name, className = 'w-5 h-5') => {
-            const icons = {
-                'LogIn': 'log-in', 'User': 'user', 'BookOpen': 'book-open', 'Users': 'users', 
-                'Home': 'home', 'BarChart2': 'bar-chart-2', 'PlusCircle': 'plus-circle', 
-                'Award': 'award', 'Menu': 'menu', 'X': 'x', 'CheckCircle': 'check-circle', 
-                'MessageCircle': 'message-circle'
-            };
-            const iconName = icons[name] || 'circle';
-            return `<i data-lucide="${iconName}" class="${className}"></i>`;
-        };
-
-        const Tag = (text) => `
-            <span class="inline-block bg-indigo-100 text-indigo-700 text-xs font-medium px-2.5 py-0.5 rounded-full mr-2 mb-2">
-                ${text}
-            </span>
-        `;
-
-        const Button = (text, onClick, variant = 'primary', className = '') => {
-            let baseStyle = 'px-4 py-2 rounded-lg font-semibold transition-colors duration-200 focus:outline-none focus:ring-4 ';
-            let style;
+        document.addEventListener('DOMContentLoaded', () => {
+            const taskList = document.getElementById('task-list');
+            const addTaskBtn = document.getElementById('add-task-btn');
+            const completionRateDisplay = document.getElementById('completion-rate');
+            const progressIndicator = document.getElementById('progress-indicator');
+            const xpBar = document.getElementById('xp-bar-progress');
             
-            switch (variant) {
-                case 'primary':
-                    style = 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-300';
-                    break;
-                case 'secondary':
-                    style = 'bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-100';
-                    break;
-                case 'success':
-                    style = 'bg-emerald-500 text-white hover:bg-emerald-600 focus:ring-emerald-200';
-                    break;
-                case 'outline':
-                    style = 'bg-transparent border border-indigo-600 text-indigo-600 hover:bg-indigo-50 focus:ring-indigo-200';
-                    break;
-                default:
-                    style = 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-300';
-            }
+            // Initial State (Simulating data fetched from the server)
+            let tasks = [
+                { id: 1, title: 'Check Squad Feed & Send Kudos', type: 'Habit', completed: false, points: 10 },
+                { id: 2, title: 'Finalize Assessment Task Design', type: 'Project', completed: true, points: 30 },
+                { id: 3, title: '30 min Focused Work Session', type: 'Habit', completed: false, points: 20 },
+                { id: 4, title: 'Read Chapter 4 of Book', type: 'Habit', completed: false, points: 15 }
+            ];
 
-            return `
-                <button onclick="${onClick}" class="${baseStyle} ${style} ${className}">
-                    ${text}
-                </button>
-            `;
-        };
-
-        const Card = (content, className = '') => `
-            <div class="card ${className}">
-                ${content}
-            </div>
-        `;
-
-        // --- AUTHENTICATION MODULE ---
-
-        let isLogin = true;
-        let authError = '';
-
-        const handleAuthSubmit = (e) => {
-            e.preventDefault();
-            const form = e.target;
-            const email = form.email.value;
-            const password = form.password.value;
-            authError = ''; // Clear previous error
-
-            if (isLogin) {
-                const user = appState.users.find(u => u.email === email && u.password === password);
-                if (user) {
-                    appState.currentUser = user;
-                    appState.view = 'dashboard';
-                } else {
-                    authError = 'Invalid email or password (Try: alex@study.com, 123)';
-                }
-            } else {
-                const username = form.username.value;
-                const role = form.role.value;
-
-                if (!username || !email || !password) {
-                    authError = 'All fields are required.';
-                } else if (appState.users.some(u => u.email === email || u.username === username)) {
-                    authError = 'Username or email already exists.';
-                } else {
-                    const newUser = {
-                        id: `user${appState.users.length + 1}`,
-                        username,
-                        role,
-                        email,
-                        password,
-                        points: 50,
-                        bio: `New ${role} on the platform.`,
-                        badges: [],
-                    };
-                    appState.users.push(newUser);
-                    appState.currentUser = newUser;
-                    appState.view = 'dashboard';
-                }
-            }
-            renderApp();
-        };
-
-        const renderAuthScreen = () => {
-            return `
-                <div class="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-                    ${Card(`
-                        <h2 class="text-3xl font-extrabold text-gray-900 text-center mb-6">
-                            ${isLogin ? 'Welcome Back' : 'Create Account'}
-                        </h2>
-                        <form id="auth-form" class="space-y-4">
-                            ${!isLogin ? `
-                                <input type="text" name="username" placeholder="Username" required 
-                                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" />
-                            ` : ''}
-                            <input type="email" name="email" placeholder="Email Address" required 
-                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" />
-                            <input type="password" name="password" placeholder="Password" required 
-                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" />
-                            ${!isLogin ? `
-                                <select name="role" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-                                    <option value="Learner">Learner</option>
-                                    <option value="Mentor">Mentor</option>
-                                </select>
-                            ` : ''}
-                            ${authError ? `<p class="text-red-500 text-sm">${authError}</p>` : ''}
-                            ${Button(isLogin ? 'Sign In' : 'Sign Up', '', 'primary', 'w-full')}
-                        </form>
-                        <div class="mt-6 text-center">
-                            <button onclick="isLogin = !isLogin; authError = ''; renderApp();"
-                                class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
-                                ${isLogin ? "Need an account? Register" : "Already have an account? Log In"}
-                            </button>
-                        </div>
-                        <p class="text-center text-sm text-gray-500 mt-4">
-                            Use 'alex@study.com' or 'mia@study.com' with password '123' to login.
-                        </p>
-                    `, 'max-w-md w-full')}
-                </div>
-            `;
-        };
-        
-        // --- CORE VIEW CHANGE FUNCTION ---
-        const changeView = (newView) => {
-            appState.view = newView;
-            appState.isSidebarOpen = false;
-            renderApp();
-        };
-        
-        // --- NEW FUNCTION TO FIX THE BUTTON ---
-        const startRecommendedPath = () => {
-            // This function handles the click event for the AI Recommended Path button.
-            // It navigates the user to the Knowledge Hub view.
-            changeView('knowledge');
-        };
-
-        // --- DASHBOARD MODULE ---
-
-        const renderDashboard = (user) => {
-            const userProgress = user.role === 'Mentor' ? 100 : Math.min(100, user.points / 15);
-            const totalContributions = appState.articles.filter(a => a.authorId === user.id).length;
-
-            const leaderboard = [...appState.users]
-                .sort((a, b) => b.points - a.points)
-                .slice(0, 5);
-
-            const leaderboardHtml = leaderboard.map((u, index) => `
-                <li class="flex justify-between items-center py-3">
-                    <div class="flex items-center">
-                        <span class="text-lg font-bold mr-3 ${index === 0 ? 'text-yellow-500' : index === 1 ? 'text-gray-400' : index === 2 ? 'text-amber-600' : 'text-gray-500'}">
-                            #${index + 1}
-                        </span>
-                        <div>
-                            <p class="font-medium text-gray-800">${u.username}</p>
-                            <p class="text-xs text-indigo-600">${u.role}</p>
-                        </div>
-                    </div>
-                    <span class="font-semibold text-lg text-indigo-700">${u.points} pts</span>
-                </li>
-            `).join('');
-
-            return `
-                <div class="space-y-6">
-                    <h1 class="text-3xl font-bold text-gray-800">Hello, ${user.username}!</h1>
-
-                    <!-- AI Recommendation Banner (Mocked) -->
-                    ${Card(`
-                        <div class="flex flex-col sm:flex-row justify-between items-center">
-                            <div>
-                                <p class="text-lg font-semibold">AI Recommended Learning Path</p>
-                                <p class="text-sm opacity-90">Based on your contributions, we recommend the 'Advanced React Hooks' module.</p>
-                            </div>
-                            <!-- FIX: Added 'startRecommendedPath()' function call here -->
-                            ${Button('Start Path', 'startRecommendedPath()', 'secondary', 'bg-white text-indigo-600 hover:bg-gray-100 mt-4 sm:mt-0')}
-                        </div>
-                    `, 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-5')}
-
-                    <!-- Stats & Progress -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        ${Card(`
-                            ${getIcon('BarChart2', 'w-6 h-6 text-indigo-500 mb-2')}
-                            <h3 class="text-2xl font-bold text-gray-900">${user.points}</h3>
-                            <p class="text-sm text-gray-500">Total Points</p>
-                        `)}
-                        ${Card(`
-                            ${getIcon('CheckCircle', 'w-6 h-6 text-emerald-500 mb-2')}
-                            <h3 class="text-2xl font-bold text-gray-900">${totalContributions}</h3>
-                            <p class="text-sm text-gray-500">Contributions</p>
-                        `)}
-                        ${Card(`
-                            <div class="flex justify-between items-center mb-2">
-                                ${getIcon('User', 'w-6 h-6 text-yellow-500')}
-                                <span class="text-sm font-medium text-indigo-600">${userProgress.toFixed(0)}%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                <div class="bg-indigo-600 h-2.5 rounded-full" style="width: ${userProgress}%"></div>
-                            </div>
-                            <p class="text-sm text-gray-500 mt-1">Overall Progress</p>
-                        `)}
-                    </div>
-
-                    <!-- Leaderboard -->
-                    ${Card(`
-                        <h2 class="text-xl font-semibold mb-4 flex items-center">
-                            ${getIcon('Award', 'w-5 h-5 text-yellow-600 mr-2')}
-                            Top 5 Mentors & Learners
-                        </h2>
-                        <ul class="divide-y divide-gray-100">
-                            ${leaderboardHtml}
-                        </ul>
-                    `)}
-                </div>
-            `;
-        };
-
-        // --- KNOWLEDGE SHARING MODULE ---
-        let isCreatingArticle = false;
-        let newArticle = { title: '', content: '', tags: '' };
-
-        const handleArticleSearch = (e) => {
-            searchTerm = e.target.value;
-            renderApp(); // Re-render to show filtered list
-        };
-
-        const toggleArticleForm = (show) => {
-            isCreatingArticle = show;
-            renderApp();
-        };
-
-        const handleCreateArticle = (e) => {
-            e.preventDefault();
-            const form = e.target;
-            const title = form.articleTitle.value;
-            const content = form.articleContent.value;
-            const tags = form.articleTags.value;
-
-            if (!title || !content) return;
-
-            const articleTags = tags.split(',').map(tag => tag.trim().toLowerCase()).filter(tag => tag);
-            const newId = appState.articles.length + 1;
-
-            const newArt = {
-                id: newId,
-                title: title,
-                content: content,
-                authorId: appState.currentUser.id,
-                authorName: appState.currentUser.username,
-                likes: 0,
-                comments: 0,
-                tags: articleTags,
-            };
-            
-            appState.articles.unshift(newArt);
-            // Give user points for contribution (Gamification)
-            appState.currentUser.points += 100;
-
-            isCreatingArticle = false;
-            renderApp();
-        };
-
-        const renderKnowledgeSharing = (user) => {
-            const filteredArticles = appState.articles.filter(article => 
-                article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                article.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                article.tags.some(tag => tag.includes(searchTerm.toLowerCase()))
-            );
-
-            const articlesHtml = filteredArticles.length > 0 ? filteredArticles.map(article => {
-                const author = appState.users.find(u => u.id === article.authorId);
-                const tagsHtml = article.tags.map(Tag).join('');
-                return Card(`
-                    <h2 class="text-xl font-semibold text-gray-900 mb-2">${article.title}</h2>
-                    <p class="text-sm text-gray-600 mb-3 line-clamp-2">${article.content}</p>
-                    <div class="mb-2">
-                        ${tagsHtml}
-                    </div>
-                    <div class="flex justify-between items-center text-xs text-gray-500">
-                        <p>By <span class="font-medium text-indigo-600">${article.authorName}</span> | ${author?.role}</p>
-                        <div class="flex space-x-4">
-                            <span>👍 ${article.likes}</span>
-                            <span>💬 ${article.comments}</span>
-                        </div>
-                    </div>
-                `, 'cursor-pointer hover:bg-indigo-50');
-            }).join('') : Card('<p class="text-center text-gray-500">No content found matching your search term.</p>');
-
-            const articleFormHtml = isCreatingArticle ? Card(`
-                <h2 class="text-xl font-semibold mb-4">New Article</h2>
-                <form id="article-form" onsubmit="handleCreateArticle(event)" class="space-y-4">
-                    <input type="text" name="articleTitle" placeholder="Article Title" required 
-                        class="w-full p-3 border border-gray-300 rounded-lg" />
-                    <textarea name="articleContent" placeholder="Content goes here..." rows="6" required 
-                        class="w-full p-3 border border-gray-300 rounded-lg"></textarea>
-                    <input type="text" name="articleTags" placeholder="Tags (e.g., react, js, frontend)" 
-                        class="w-full p-3 border border-gray-300 rounded-lg" />
-                    <div class="flex justify-end space-x-3">
-                        ${Button('Cancel', 'toggleArticleForm(false)', 'secondary')}
-                        ${Button('Publish', '', 'primary')}
-                    </div>
-                </form>
-            `) : '';
-
-            return `
-                <div class="space-y-6">
-                    <h1 class="text-3xl font-bold text-gray-800">Knowledge Hub</h1>
-                    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                        <input type="text" placeholder="Search articles by title, content, or tag..." value="${searchTerm}"
-                            oninput="handleArticleSearch(event)"
-                            class="w-full md:w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" />
-                        ${Button(getIcon('PlusCircle', 'w-5 h-5 mr-2') + ' Publish Content', 'toggleArticleForm(true)', 'success', 'w-full md:w-auto flex items-center justify-center')}
-                    </div>
-                    ${articleFormHtml}
-                    <div class="space-y-4">
-                        ${articlesHtml}
-                    </div>
-                </div>
-            `;
-        };
-        
-        // --- STUDY GROUPS MODULE ---
-
-        const handleGroupChange = (groupId) => {
-            activeGroupId = groupId;
-            renderApp();
-        };
-
-        const handleSendMessage = (e) => {
-            e.preventDefault();
-            const input = document.getElementById('chat-input');
-            const message = input.value.trim();
-            if (!message) return;
-
-            const now = new Date();
-            const newMessage = {
-                id: appState.chatMessages.length + 1,
-                groupId: activeGroupId,
-                userId: appState.currentUser.id,
-                user: appState.currentUser.username,
-                text: message,
-                time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+            let userStats = {
+                xp: 60,
+                level: 2
             };
 
-            // Mock append and re-render
-            appState.chatMessages.push(newMessage);
-            input.value = ''; // Clear input
-            renderApp(); 
-            
-            // Scroll to bottom after re-render (needs deferred execution)
-            setTimeout(() => {
-                const chatArea = document.getElementById('chat-area');
-                if (chatArea) {
-                    chatArea.scrollTop = chatArea.scrollHeight;
+            const CIRCUMFERENCE = 314.15; // 2 * PI * 50 (radius of the progress ring)
+
+            // --- Core Functions ---
+
+            function renderTasks() {
+                taskList.innerHTML = ''; 
+                tasks.forEach(task => {
+                    const li = document.createElement('li');
+                    li.className = 'task-item';
+                    li.setAttribute('data-id', task.id);
+
+                    const isCompleted = task.completed ? 'checked' : '';
+                    const completionClass = task.completed ? 'completed' : '';
+                    const tagClass = task.type === 'Habit' ? 'tag-habit' : 'tag-project';
+
+                    li.innerHTML = `
+                        <div class="task-content ${completionClass}">
+                            <input type="checkbox" id="task-${task.id}" data-id="${task.id}" ${isCompleted}>
+                            <label for="task-${task.id}">${task.title}</label>
+                            <span class="tag ${tagClass}">${task.type}</span>
+                        </div>
+                        <i class="fas fa-ellipsis-v options-icon"></i>
+                    `;
+                    taskList.appendChild(li);
+                });
+
+                document.querySelectorAll('#task-list input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.addEventListener('change', handleTaskCompletion);
+                });
+                
+                updateAnalytics();
+                updateGamification();
+            }
+
+            function handleTaskCompletion(event) {
+                const checkbox = event.target;
+                const taskId = parseInt(checkbox.getAttribute('data-id'));
+                const taskItem = tasks.find(t => t.id === taskId);
+                
+                if (taskItem) {
+                    taskItem.completed = checkbox.checked;
+
+                    // Update XP/Gamification
+                    const pointsChange = checkbox.checked ? taskItem.points : -taskItem.points;
+                    updateXP(pointsChange);
+
+                    // Visual update
+                    const content = checkbox.closest('.task-item').querySelector('.task-content');
+                    if (checkbox.checked) {
+                        content.classList.add('completed');
+                    } else {
+                        content.classList.remove('completed');
+                    }
                 }
-            }, 50);
-        };
 
-        const renderStudyGroups = (user) => {
-            const activeGroup = appState.groups.find(g => g.id === activeGroupId);
-            const currentChat = appState.chatMessages.filter(m => m.groupId === activeGroupId);
-
-            const groupListHtml = appState.groups.map(group => {
-                const isActive = activeGroupId === group.id;
-                const liveStatus = group.isLive ? `
-                    <span class="text-xs text-green-600 font-medium flex items-center mt-1">
-                        <div class="w-2 h-2 rounded-full bg-green-500 mr-1 animate-pulse"></div> Live Discussion
-                    </span>
-                ` : '';
-
-                return `
-                    <li onclick="handleGroupChange(${group.id})"
-                        class="p-4 cursor-pointer hover:bg-gray-50 transition-colors ${isActive ? 'bg-indigo-50 border-l-4 border-indigo-600' : ''}">
-                        <p class="font-semibold text-gray-900">${group.name}</p>
-                        <p class="text-sm text-gray-500 truncate">${group.lastMessage}</p>
-                        ${liveStatus}
-                    </li>
-                `;
-            }).join('');
-
-            const getRoleColor = (role) => {
-                return role === 'Mentor' ? 'text-purple-600 font-bold' : 'text-gray-600';
-            };
-
-            const chatHtml = currentChat.map((msg) => {
-                const sender = appState.users.find(u => u.id === msg.userId);
-                const isCurrentUser = msg.userId === user.id; 
-                const senderRoleColor = getRoleColor(sender?.role);
-
-                return `
-                    <div class="flex ${isCurrentUser ? 'justify-end' : 'justify-start'}">
-                        <div class="max-w-xs md:max-w-md p-3 rounded-xl shadow-md ${isCurrentUser ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-white text-gray-800 rounded-tl-none border'}">
-                            ${!isCurrentUser ? `<p class="text-xs mb-1 ${senderRoleColor}">${msg.user} (${sender?.role})</p>` : ''}
-                            <p class="text-sm">${msg.text}</p>
-                            <p class="text-xs mt-1 ${isCurrentUser ? 'text-indigo-200' : 'text-gray-400'} text-right">${msg.time}</p>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            const chatArea = activeGroup ? `
-                <div class="w-full md:w-2/3 flex flex-col card p-0 h-full">
-                    <div class="p-4 border-b border-gray-100 bg-indigo-50">
-                        <h3 class="text-lg font-bold text-gray-800">${activeGroup.name}</h3>
-                        <p class="text-sm text-gray-600">${activeGroup.topic}</p>
-                    </div>
-                    
-                    <!-- Messages -->
-                    <div id="chat-area" class="flex-1 p-4 space-y-4 overflow-y-auto bg-gray-50 hide-scrollbar">
-                        ${chatHtml}
-                    </div>
-                    
-                    <!-- Input -->
-                    <form onsubmit="handleSendMessage(event)" class="p-4 border-t border-gray-100 bg-white">
-                        <div class="flex items-center space-x-3">
-                            <input type="text" id="chat-input" placeholder="Type your message..." 
-                                class="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" />
-                            ${Button('Send', '', 'primary', 'p-3')}
-                        </div>
-                    </form>
-                </div>
-            ` : `
-                <div class="w-full md:w-2/3 flex justify-center items-center h-full text-gray-500 card">
-                    Select a group to start collaborating!
-                </div>
-            `;
-
-            return `
-                <div class="flex flex-col md:flex-row h-[calc(100vh-120px)] space-y-4 md:space-y-0 md:space-x-6">
-                    <!-- Group List (Sidebar) -->
-                    <div class="w-full md:w-1/3 card p-0 overflow-y-auto hide-scrollbar">
-                        <div class="p-4 border-b border-gray-100">
-                            <h2 class="text-xl font-semibold text-gray-800">Study Groups ${getIcon('Users', 'inline w-5 h-5 ml-2 text-indigo-500')}</h2>
-                        </div>
-                        <ul class="divide-y divide-gray-100">
-                            ${groupListHtml}
-                        </ul>
-                    </div>
-                    <!-- Chat Area -->
-                    ${chatArea}
-                </div>
-            `;
-        };
-        
-        // --- PROFILE MODULE ---
-        const renderProfile = (user) => {
-            const userBadges = mockBadges.filter(badge => user.badges.includes(badge.id));
-            const allArticles = appState.articles.filter(a => a.authorId === user.id);
-
-            const userArticleList = allArticles.length > 0 ? allArticles.map(article => `
-                <li class="py-3 flex justify-between items-center">
-                    <div>
-                        <p class="font-medium text-gray-800">${article.title}</p>
-                        <div class="mt-1">
-                            ${article.tags.map(Tag).join('')}
-                        </div>
-                    </div>
-                    <span class="text-sm text-gray-500">${article.likes} Likes</span>
-                </li>
-            `).join('') : '<li class="py-3 text-center text-gray-500">No content published yet. Start creating!</li>';
-
-            const badgesHtml = mockBadges.map(badge => {
-                const earned = user.badges.includes(badge.id);
-                return `
-                    <div class="p-4 rounded-xl text-center border-2 transition-all ${earned ? 'bg-yellow-50 border-yellow-300 shadow-lg' : 'bg-gray-100 border-gray-200 opacity-60'}">
-                        <div class="text-4xl mb-2">${badge.icon}</div>
-                        <p class="font-semibold text-gray-900">${badge.name}</p>
-                        <p class="text-xs text-gray-500">${badge.description}</p>
-                        ${earned ? '<span class="text-xs text-green-600 font-bold mt-1 block">Earned!</span>' : ''}
-                    </div>
-                `;
-            }).join('');
-
-            return `
-                <div class="space-y-6">
-                    <h1 class="text-3xl font-bold text-gray-800">User Profile</h1>
-
-                    <!-- Profile Card -->
-                    ${Card(`
-                        <div class="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
-                            <div class="w-24 h-24 rounded-full bg-indigo-100 flex items-center justify-center text-4xl font-bold text-indigo-700 border-4 border-indigo-300 shadow-md">
-                                ${user.username.charAt(0)}
-                            </div>
-                            <div>
-                                <h2 class="text-2xl font-bold text-gray-900">${user.username}</h2>
-                                <p class="text-lg font-medium ${user.role === 'Mentor' ? 'text-purple-600' : 'text-indigo-600'}">
-                                    ${user.role}
-                                </p>
-                                <p class="text-gray-600 mt-2 italic">${user.bio}</p>
-                                <div class="flex space-x-6 mt-3">
-                                    <span class="text-sm font-semibold text-gray-700 flex items-center">
-                                        ${getIcon('Award', 'w-4 h-4 mr-1 text-yellow-500')} ${user.points} Points
-                                    </span>
-                                    <span class="text-sm font-semibold text-gray-700 flex items-center">
-                                        ${getIcon('BookOpen', 'w-4 h-4 mr-1 text-indigo-500')} ${allArticles.length} Articles Published
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    `)}
-
-                    <!-- Badges Section -->
-                    ${Card(`
-                        <h2 class="text-xl font-semibold mb-4 flex items-center">
-                            ${getIcon('Award', 'w-5 h-5 text-indigo-600 mr-2')}
-                            My Achievement Badges (${userBadges.length}/${mockBadges.length})
-                        </h2>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                            ${badgesHtml}
-                        </div>
-                    `)}
-
-                    <!-- User Activity/Content -->
-                    ${Card(`
-                        <h2 class="text-xl font-semibold mb-4">My Published Content</h2>
-                        <ul class="divide-y divide-gray-100">
-                            ${userArticleList}
-                        </ul>
-                    `)}
-                </div>
-            `;
-        };
-
-        // --- GLOBAL APP RENDERER ---
-
-        const navItems = [
-            { name: 'Dashboard', icon: 'Home', view: 'dashboard' },
-            { name: 'Knowledge Hub', icon: 'BookOpen', view: 'knowledge' },
-            { name: 'Study Groups', icon: 'Users', view: 'groups' },
-            { name: 'My Profile', icon: 'User', view: 'profile' },
-        ];
-
-
-        const handleLogout = () => {
-            appState.currentUser = null;
-            appState.view = 'dashboard';
-            renderApp();
-        };
-
-        const toggleSidebar = (open) => {
-            appState.isSidebarOpen = open;
-            renderApp();
-        };
-
-        const renderSidebar = (user) => {
-            const navHtml = navItems.map(item => `
-                <button
-                    onclick="changeView('${item.view}')"
-                    class="w-full flex items-center p-3 rounded-xl transition-colors duration-150 ${appState.view === item.view ? 'bg-indigo-100 text-indigo-700 font-semibold shadow-inner' : 'text-gray-600 hover:bg-gray-50'}">
-                    ${getIcon(item.icon, 'w-5 h-5 mr-3')}
-                    ${item.name}
-                </button>
-            `).join('');
-
-            const userProfile = user ? `
-                <div class="mt-8 pt-4 border-t border-gray-100">
-                    <div class="flex items-center space-x-3 mb-4">
-                        <div class="w-10 h-10 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold">
-                            ${user.username.charAt(0)}
-                        </div>
-                        <div>
-                            <p class="font-semibold text-gray-900 truncate">${user.username}</p>
-                            <p class="text-xs ${user.role === 'Mentor' ? 'text-purple-600' : 'text-indigo-600'}">${user.role}</p>
-                        </div>
-                    </div>
-                    ${Button(getIcon('LogIn', 'w-4 h-4 mr-2 rotate-180') + ' Log Out', 'handleLogout()', 'outline', 'w-full text-sm')}
-                </div>
-            ` : '';
-
-            return `
-                <div id="sidebar" 
-                    class="fixed inset-y-0 left-0 transform ${appState.isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 transition-transform duration-300 ease-in-out w-64 bg-white border-r border-gray-100 p-4 flex flex-col z-20 h-screen">
-                    <div class="flex justify-between items-center mb-6">
-                        <h1 class="text-2xl font-black text-indigo-600">EduVerse</h1>
-                        <button class="md:hidden p-2 text-gray-500 hover:text-gray-800" onclick="toggleSidebar(false)">
-                            ${getIcon('X', 'w-6 h-6')}
-                        </button>
-                    </div>
-                    <nav class="flex-1 space-y-2">
-                        ${navHtml}
-                    </nav>
-                    ${userProfile}
-                </div>
-            `;
-        };
-
-        const renderMainContent = (user) => {
-            let contentHtml = '';
-            switch (appState.view) {
-                case 'dashboard':
-                    contentHtml = renderDashboard(user);
-                    break;
-                case 'knowledge':
-                    contentHtml = renderKnowledgeSharing(user);
-                    break;
-                case 'groups':
-                    contentHtml = renderStudyGroups(user);
-                    break;
-                case 'profile':
-                    contentHtml = renderProfile(user);
-                    break;
-                default:
-                    contentHtml = renderDashboard(user);
-            }
-
-            return `
-                <div class="flex-1 flex flex-col overflow-hidden h-screen">
-                    <!-- Header/Mobile Nav -->
-                    <header class="bg-white shadow-md md:hidden p-4 flex justify-between items-center z-10">
-                        <button class="p-2 text-gray-600" onclick="toggleSidebar(true)">
-                            ${getIcon('Menu', 'w-6 h-6')}
-                        </button>
-                        <h1 class="text-xl font-black text-indigo-600">EduVerse</h1>
-                        <div class="w-8 h-8 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold">
-                            ${user.username.charAt(0)}
-                        </div>
-                    </header>
-                    <!-- Content Body -->
-                    <main class="flex-1 overflow-y-auto p-4 md:p-8">
-                        <div class="max-w-7xl mx-auto">
-                            ${contentHtml}
-                        </div>
-                    </main>
-                </div>
-                <!-- Mobile overlay -->
-                ${appState.isSidebarOpen ? `<div class="fixed inset-0 bg-black opacity-50 z-10 md:hidden" onclick="toggleSidebar(false)"></div>` : ''}
-            `;
-        };
-
-
-        const renderApp = () => {
-            const appContainer = document.getElementById('app');
-            let html = '';
-
-            if (!appState.currentUser) {
-                html = renderAuthScreen();
-            } else {
-                html = `
-                    <div class="flex h-screen bg-gray-50">
-                        ${renderSidebar(appState.currentUser)}
-                        ${renderMainContent(appState.currentUser)}
-                    </div>
-                `;
+                updateAnalytics();
             }
             
-            appContainer.innerHTML = html;
-            
-            // Re-initialize Lucide icons after DOM update
-            lucide.createIcons();
+            // --- Gamification Functions ---
 
-            // Attach event listener for the auth form after it is rendered
-            if (!appState.currentUser) {
-                const authForm = document.getElementById('auth-form');
-                if (authForm) {
-                    authForm.onsubmit = handleAuthSubmit;
+            function updateXP(points) {
+                userStats.xp += points;
+                
+                // Simple Level Up Logic (100 XP per level)
+                if (userStats.xp >= userStats.level * 100) {
+                    userStats.level++;
+                    alert(`🎉 Congratulations! You reached Level ${userStats.level}!`);
                 }
-            }
-            
-            // Ensure chat scrolls to bottom on group view
-            if (appState.currentUser && appState.view === 'groups') {
-                const chatArea = document.getElementById('chat-area');
-                if (chatArea) {
-                    chatArea.scrollTop = chatArea.scrollHeight;
-                }
-            }
-        };
+                
+                if (userStats.xp < 0) userStats.xp = 0;
 
-        // Initial render on load
-        window.onload = renderApp;
+                updateGamification();
+            }
+
+            function updateGamification() {
+                const xpProgress = userStats.xp % 100; // XP within the current level
+                
+                // Calculate percentage width for the XP bar
+                const widthPercent = (xpProgress / 100) * 100; 
+                xpBar.style.width = `${widthPercent}%`;
+                
+                // Update skill level text
+                document.querySelector('.level-text').textContent = 
+                    `Level ${userStats.level} (${100 - xpProgress} XP to Level ${userStats.level + 1})`;
+            }
+
+            // --- Analytics Functions ---
+
+            function updateAnalytics() {
+                const completedTasks = tasks.filter(t => t.completed).length;
+                const totalTasks = tasks.length;
+                const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+                
+                completionRateDisplay.textContent = `${completionRate}%`;
+
+                // Calculate stroke-dashoffset for the progress ring
+                const offset = CIRCUMFERENCE - (completionRate / 100) * CIRCUMFERENCE;
+                progressIndicator.style.strokeDashoffset = offset;
+            }
+
+
+            addTaskBtn.addEventListener('click', () => {
+                const title = prompt("Enter new Flow Item (Task or Habit):");
+                if (!title) return;
+                
+                const typeInput = prompt("Is this a 'Task' or 'Habit'? (Enter T or H)").toUpperCase();
+                const type = (typeInput === 'H') ? 'Habit' : 'Project';
+                const points = (type === 'Habit') ? 10 : 25;
+
+                const newTask = {
+                    id: Date.now(),
+                    title: title,
+                    type: type,
+                    completed: false,
+                    points: points
+                };
+                tasks.push(newTask);
+                renderTasks();
+            });
+
+            // Initial load
+            renderTasks();
+        });
     </script>
 </body>
 </html>
